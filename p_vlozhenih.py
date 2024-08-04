@@ -5,7 +5,7 @@ from bs4 import BeautifulSoup
 from urllib.parse import urljoin
 
 # URL страницы для парсинга
-URL = 'https://www.che168.com/china/wushiling/dmax/'
+URL = 'https://www.che168.com/china/changan/changancs75plus/a3_5msdgscncgpi1ltocsp2exx0/'
 
 # Заголовки для имитации браузера
 HEADERS = {
@@ -34,12 +34,13 @@ def get_content(html):
 
 
 def get_car_details(car_url):
+    time.sleep(5)
     # Получаем HTML-код страницы автомобиля
     html = get_html(car_url)
     if html.status_code == 200:
         soup = BeautifulSoup(html.text, 'html.parser')
 
-        # Пример извлечения информации (можно изменить в зависимости от структуры страницы)
+        # извлечения информации
         title = soup.find('h3').text.strip() if soup.find('h3') else 'Нет названия'  # Название автомобиля
         price_element = soup.find('span', class_='price')
         price = price_element.text.strip() if price_element else 'Цена не указана'  # Цена автомобиля
@@ -66,7 +67,9 @@ def parse():
             details = get_car_details(car)  # Получаем детали каждого автомобиля
             if details:
                 car_data.append(details)  # Добавляем данные в список
-                time.sleep(20)
+
+            time.sleep(2)
+
         # Выводим собранные данные
         for car in car_data:
             print(car)
