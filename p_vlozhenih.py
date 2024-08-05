@@ -1,11 +1,12 @@
 import time
+import re
 
 import requests
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin
 
 # URL страницы для парсинга
-URL = 'https://www.che168.com/china/changan/changancs75plus/a3_5msdgscncgpi1ltocsp2exx0/'
+URL = 'https://www.che168.com/china/wushiling/dmax/'
 
 # Заголовки для имитации браузера
 HEADERS = {
@@ -46,10 +47,57 @@ def get_car_details(car_url):
         price = price_element.text.strip() if price_element else 'Цена не указана'  # Цена автомобиля
       #  details = soup.find('div', class_='details').text.strip()  # Характеристики
 
+        # Получение всех тегов h4
+        h4_elements = soup.find_all('h4')
+
+        # Помещение содержимого h4 в разные переменные
+
+        if len(h4_elements) > 2:
+            mileage = h4_elements[2].get_text(strip=True) or "Нет данных"
+        else:
+            mileage = "Нет данных"
+        if mileage != "Нет данных":
+            # Удаляем символы, которые не являются цифрами или точками
+            numbers_only = re.sub(r'[^\d.]', '', mileage)
+
+            if numbers_only:  # Проверяем, что строка не пустая
+                # Преобразуем строку в число с плавающей запятой
+                price_value = float(numbers_only)
+
+                # Умножаем на 10 тысяч
+                mileage = price_value * 10000  # Сохраняем результат в mileage
+
+                # Форматируем результат обратно в строку с символом ¥ (если это нужно для вывода)
+                mileage = f"{mileage:}"
+            else:
+                mileage = "Нет данных"  # Если numbers_only пусто, устанавливаем сообщение об ошибке
+        else:
+            mileage = "Нет данных"
+
+        if len(h4_elements) > 3:
+            registration_time = h4_elements[3].get_text(strip=True) or "Нет данных"
+        else:
+            registration_time = "Нет данных"
+
+        if len(h4_elements) > 4:
+            gear_and_displacement = h4_elements[4].get_text(strip=True) or "Нет данных"
+        else:
+            gear_and_displacement = "Нет данных"
+
+        if len(h4_elements) > 4:
+            location = h4_elements[5].get_text(strip=True) or "Нет данных"
+        else:
+            location = "Нет данных"
+
+
         return {
             'url': car_url,
             'title': title,
             'price': price,
+            'mileage': mileage,
+            'registration_time': registration_time,
+            'gear_and_displacement': gear_and_displacement,
+            'location': location,
           #  'details': details,
         }
     else:
