@@ -3,27 +3,41 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-#import time
+import time
+from selenium.webdriver.chrome.options import Options
 import re
 import logging
 
+# Настройка логирования
+logging.basicConfig(level=logging.INFO)
+
 
 def selenium_details(car_url, replacement_dict, max_attempts=3):
+    options = Options()
+    #options.add_argument("--headless")  # Запуск в фоновом режиме (без GUI)
+    #options.add_argument("--no-sandbox")
+    #options.add_argument("--disable-dev-shm-usage")
+    options.page_load_strategy = 'none'  # Отключаем ожидание загрузки страницы
+
     # Настройка драйвера Chrome
     service = Service('C:/Users/iuser/AppData/Local/Microsoft/WinGet/Packages/Chromium.ChromeDriver_Microsoft.Winget'
                       '.Source_8wekyb3d8bbwe/chromedriver-win64/chromedriver.exe')  # Укажите путь к ChromeDriver
-    driver = webdriver.Chrome(service=service)
+    driver = webdriver.Chrome(service=service, options=options)
 
     attempt = 0
     while attempt < max_attempts:
         try:
             driver.get(car_url)
-            #time.sleep(10)  # Задержка перед загрузкой страницы автомобиля
 
+            #time.sleep(5)  # Задержка перед загрузкой страницы автомобиля
+            logging.info(f'Парсинг страницы {car_url}...')
+           # driver.execute_script("window.stop();")  # Остановить загрузку страницы
+            #title_element = driver.find_element(By.TAG_NAME, 'h3')
             # Явное ожидание для необходимых элементов
-            title_element = WebDriverWait(driver, 10).until(
+            title_element = WebDriverWait(driver, 5).until(
                 EC.presence_of_element_located((By.TAG_NAME, 'h3'))
             )
+
             price_element = driver.find_element(By.CSS_SELECTOR, 'span.price')
 
             # Инициализируем переменную для хранения информации о двигателе

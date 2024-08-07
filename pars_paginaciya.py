@@ -44,7 +44,7 @@ def parse():
         page_url = (f'{BASE_URL}'
                     f'msdgscncgpi1ltocsp{page_number}exx0/')  # exr3/'  # exx0/'
         logging.info(f'Парсинг страницы {page_url}...')
-        #time.sleep(10)
+        time.sleep(5)
         html = get_html(page_url)
 
         if html.status_code == 200:
