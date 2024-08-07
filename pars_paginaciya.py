@@ -3,7 +3,7 @@ import json
 import logging
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin
-from get_car_details import get_car_details
+from selenium_details import selenium_details
 from get_html import get_html
 
 # Настройка логирования
@@ -44,7 +44,7 @@ def parse():
         page_url = (f'{BASE_URL}'
                     f'msdgscncgpi1ltocsp{page_number}exx0/')  # exr3/'  # exx0/'
         logging.info(f'Парсинг страницы {page_url}...')
-        time.sleep(10)
+        #time.sleep(10)
         html = get_html(page_url)
 
         if html.status_code == 200:
@@ -68,7 +68,7 @@ def parse():
     replacement_dict = load_replacement_dict(dict_file_path)
 
     for car in all_car_links:
-        details = get_car_details(car, replacement_dict)  # Получаем детали каждого автомобиля
+        details = selenium_details(car, replacement_dict)  # Получаем детали каждого автомобиля
         if details:
             car_data.append(details)  # Добавляем данные в список
 
