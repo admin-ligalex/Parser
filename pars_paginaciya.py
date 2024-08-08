@@ -12,7 +12,7 @@ from get_html import get_html
 logging.basicConfig(level=logging.INFO)
 
 # Базовый URL страницы для парсинга
-BASE_URL = 'https://www.che168.com/china/wushiling/dmax/a0_0'
+BASE_URL = 'https://www.che168.com/china/richan/tuda/a3_5'
 
 
 def load_replacement_dict(file_path):
@@ -84,7 +84,7 @@ def parse():
         time.sleep(5)
         html = get_html(page_url)
 
-        csv_file = 'cars_data.csv'
+        csv_file = 'd-max.csv'
         existing_urls = read_existing_urls(csv_file)
 
         if html.status_code == 200:
@@ -114,7 +114,7 @@ def parse():
     details = parse_multiple_pages(all_car_links, replacement_dict)  # Получаем детали каждого автомобиля
 
     # Запись данных в CSV файл
-    csv_file = 'cars_data.csv'
+    csv_file = 'd-max.csv'
     if details:  # Проверяем, что список не пустой
         write_to_csv(details, csv_file)
         print(f'Data has been written to {csv_file}')
