@@ -3,7 +3,7 @@ import json
 import logging
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin
-from selenium_details import selenium_details
+from parse_multiple_pages import parse_multiple_pages
 from get_html import get_html
 
 # Настройка логирования
@@ -60,21 +60,26 @@ def parse():
             break
 
     # Теперь парсим каждую ссылку для получения деталей
-    car_data = []  # Список для хранения данных об автомобилях
+    #car_data = []  # Список для хранения данных об автомобилях
     # Путь к файлу со словарем
     dict_file_path = 'replacement_dict.json'
 
     # Загружаем словарь из файла
     replacement_dict = load_replacement_dict(dict_file_path)
+    details = parse_multiple_pages(all_car_links, replacement_dict)  # Получаем детали каждого автомобиля
+    print(details)
 
+
+"""
     for car in all_car_links:
-        details = selenium_details(car, replacement_dict)  # Получаем детали каждого автомобиля
+        details = parse_multiple_pages(car, replacement_dict)  # Получаем детали каждого автомобиля
         if details:
             car_data.append(details)  # Добавляем данные в список
+
 
     # Выводим собранные данные
     for car in car_data:
         print(car)
-
+"""
 
 parse()
