@@ -12,7 +12,7 @@ from get_html import get_html
 logging.basicConfig(level=logging.INFO)
 
 # Базовый URL страницы для парсинга
-BASE_URL = 'https://www.che168.com/china/richan/tuda/a3_5'
+BASE_URL = 'https://www.che168.com/china/wushiling/dmax/a3_5'
 
 
 def load_replacement_dict(file_path):

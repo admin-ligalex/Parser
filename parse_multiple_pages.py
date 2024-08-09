@@ -10,11 +10,11 @@ from concurrent.futures import ThreadPoolExecutor
 
 
 def selenium_details(car_url, replacement_dict, max_attempts=3):
-  #  extension_path = 'C:/Users/iuser/Documents/BrowsecVPN/'  # или путь к
+    #  extension_path = 'C:/Users/iuser/Documents/BrowsecVPN/'  # или путь к
     # распакованной папке
     options = Options()
-  #  options.add_argument("--auto-open-devtools-for-tabs")  # Открывает инструменты разработчика при запуске
-  #  options.add_extension(extension_path)
+    #  options.add_argument("--auto-open-devtools-for-tabs")  # Открывает инструменты разработчика при запуске
+    #  options.add_extension(extension_path)
     options.page_load_strategy = 'eager'  # 'none'
     service = Service('C:/Users/iuser/AppData/Local/Microsoft/WinGet/Packages/Chromium.ChromeDriver_Microsoft.Winget'
                       '.Source_8wekyb3d8bbwe/chromedriver-win64/chromedriver.exe')
@@ -53,6 +53,14 @@ def selenium_details(car_url, replacement_dict, max_attempts=3):
                     mileage = "Нет данных"  # Или любое другое значение по умолчанию
 
             registration_time = h4_elements[3].text.strip() if len(h4_elements) > 3 else "Нет данных"
+            match = re.match(r'(\d{4})年(\d{2})月', registration_time)
+            if match:
+                year = match.group(1)  # Год
+                month = match.group(2)  # Месяц
+            else:
+                year = "Нет данных"
+                month = "Нет данных"
+
             gear_and_displacement = h4_elements[4].text.strip() if len(h4_elements) > 4 else "Нет данных"
             location = h4_elements[5].text.strip() if len(h4_elements) > 5 else "Нет данных"
             location = replacement_dict.get(location, location)
@@ -60,11 +68,20 @@ def selenium_details(car_url, replacement_dict, max_attempts=3):
             if title_element and price_element:
                 title = title_element.text.strip()
                 price = price_element.text.strip()
+                numbers_only = re.sub(r'[^0-9.]', '', price)
+                if numbers_only and numbers_only != '.':
+                    price = float(numbers_only) * 10000
+                    price = f"{price:.0f}"
+                else:
+                    price = 'нет данных'
+
                 return {
                     'url': car_url,
                     'title': title,
                     'price': price,
                     'mileage': mileage,
+                    'year': year,
+                    'month': month,
                     'registration_time': registration_time,
                     'gear_and_displacement': gear_and_displacement,
                     'engine_info': engine_info,

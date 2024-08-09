@@ -7,10 +7,9 @@ from get_html import get_html
 
 # Функция для получения деталей автомобиля
 def get_car_details(car_url, replacement_dict, max_attempts=3):
-
     attempt = 0
     while attempt < max_attempts:
-        time.sleep(10)  # Задержка перед загрузкой страницы автомобиля
+        time.sleep(5)  # Задержка перед загрузкой страницы автомобиля
         html = get_html(car_url)
 
         if html:  # and html.status_code == 200:
@@ -19,6 +18,12 @@ def get_car_details(car_url, replacement_dict, max_attempts=3):
             # Проверка наличия необходимых элементов на странице
             title_element = soup.find('h3')
             price_element = soup.find('span', class_='price')
+            if price_element:
+                number_only = re.sub(r'[^\d.]', '', price_element)
+                if number_only:
+                    price_value = float(number_only)
+                    price_element = price_value * 10000
+                    price_element = f"{price_element:.0f}"
 
             # Инициализируем переменную для хранения информации о двигателе
             engine_info = None
@@ -75,7 +80,7 @@ def get_car_details(car_url, replacement_dict, max_attempts=3):
 
             if title_element and price_element:
                 title = title_element.text.strip()
-                price = price_element.text.strip()
+                price = price_element  #.text.strip()
 
                 return {
                     'url': car_url,
