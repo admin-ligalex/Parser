@@ -82,7 +82,6 @@ def selenium_details(car_url, replacement_dict, max_attempts=3):
                     'mileage': mileage,
                     'year': year,
                     'month': month,
-                    'registration_time': registration_time,
                     'gear_and_displacement': gear_and_displacement,
                     'engine_info': engine_info,
                     'location': location,

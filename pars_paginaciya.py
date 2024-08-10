@@ -12,7 +12,9 @@ from get_html import get_html
 logging.basicConfig(level=logging.INFO)
 
 # Базовый URL страницы для парсинга
-BASE_URL = 'https://www.che168.com/china/wushiling/dmax/a3_5'
+BASE_URL = 'https://www.che168.com/china/tesila/modely/a3_5'
+csv_file = 'tesla.csv'
+
 
 
 def load_replacement_dict(file_path):
@@ -26,16 +28,27 @@ def get_content(html):
     items = soup.find_all('a', class_='carinfo')  # Находим все ссылки на автомобили
 
     cars = []
+    images = []  # Список для хранения ссылок на изображения
+
     for item in items:
-        link = item.get('href')  # Получаем атрибут href
+        link = item.get('href')
         if link:
             absolute_link = urljoin(BASE_URL, link.split('?')[0])  # Преобразуем относительную ссылку в абсолютную
 
-            # Проверяем, что ссылка не содержит '/TopicApp/' и соответствует нужному формату
+            # Проверяем, что ссылка соответствует нужному формату
             if '/TopicApp/' not in absolute_link and 'che168.com/dealer/' in absolute_link:
                 cars.append(absolute_link)  # Добавляем ссылку в список
 
-    return cars  # Возвращаем список ссылок
+                # Находим изображение внутри элемента
+                img_tag = item.find('img', src=True)  # Находим тег img с атрибутом src
+                if img_tag:
+                    img_src = img_tag['src']
+                    # Добавляем протокол, если нужно
+                    if img_src.startswith('//'):
+                        img_src = 'https:' + img_src
+                    images.append(img_src)  # Добавляем ссылку на изображение в список
+
+    return cars, images  # Возвращаем оба списка
 
 
 # Функция для чтения существующих URL из CSV файла
@@ -79,12 +92,12 @@ def parse():
     while True:
         # Формируем URL для страницы
         page_url = (f'{BASE_URL}'
-                    f'msdgscncgpi1ltocsp{page_number}exx0/')
+                    f'msdgscncgpi1ltocsp{page_number}exr3/') #exr3 exx0
         logging.info(f'Парсинг страницы {page_url}...')
         time.sleep(5)
         html = get_html(page_url)
 
-        csv_file = 'd-max.csv'
+
         existing_urls = read_existing_urls(csv_file)
 
         if html.status_code == 200:
@@ -114,7 +127,7 @@ def parse():
     details = parse_multiple_pages(all_car_links, replacement_dict)  # Получаем детали каждого автомобиля
 
     # Запись данных в CSV файл
-    csv_file = 'd-max.csv'
+
     if details:  # Проверяем, что список не пустой
         write_to_csv(details, csv_file)
         print(f'Data has been written to {csv_file}')

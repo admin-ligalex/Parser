@@ -1,7 +1,7 @@
 import pandas as pd
 
 # Чтение данных из CSV файла
-data = pd.read_csv('d-max.csv')
+data = pd.read_csv('tesla.csv')
 
 # Генерация HTML-кода
 html_content = '''
@@ -11,61 +11,67 @@ html_content = '''
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Car Listings</title>
-    <style>
-        table {
-            width: 80%;
-            border-collapse: collapse;
-            margin: 20px auto;
-        }
-        th, td {
-            border: 1px solid black;
-            padding: 8px;
-            text-align: left;
-        }
-        th {
-            background-color: #f2f2f2;
-        }
-        a {
-            color: blue;
-            text-decoration: none;
-        }
-    </style>
+<style>
+    .container {
+        width: 80%;
+        margin: 20px auto;
+    }
+    .row {
+        display: flex;
+        border-bottom: 1px solid black;
+    }
+    .header, .cell {
+        padding: 8px;
+        text-align: left;
+        flex: 1; /* равномерное распределение ширины */
+    }
+    .header {
+        background-color: #f2f2f2;
+        font-weight: bold;
+    }
+    a {
+        color: blue;
+        text-decoration: none;
+    }
+</style>
 </head>
 <body>
     <h1>Car Listings</h1>
-    <table>
-        <tr>
-            <th>URL</th>
-            <th>Title</th>
-            <th>Price</th>
-            <th>Mileage</th>
-            <th>Year</th>
-            <th>Month</th>
-            <th>Gear and Displacement</th>
-            <th>Engine Info</th>
-            <th>Location</th>
-        </tr>
+    <div class="container">
+        <div class="row header">
+            <div class="cell">URL</div>
+            <div class="cell">Title</div>
+            <div class="cell">Price</div>
+            <div class="cell">Mileage</div>
+            <div class="cell">Year</div>
+            <div class="cell">Month</div>
+            <div class="cell">Gear and Displacement</div>
+            <div class="cell">Engine Info</div>
+            <div class="cell">Location</div>
+        </div>
+    </div>
+</body>
 '''
 
 # Добавление строк таблицы из данных CSV
 for index, row in data.iterrows():
     html_content += f'''
-        <tr>
-            <td><a href="{row['url']}">{row['url']}</a></td>
-            <td>{row['title']}</td>
-            <td>{row['price']}</td>
-            <td>{row['mileage']}</td>
-            <td>{row['year']}</td>
-            <td>{row['month']}</td>
-            <td>{row['gear_and_displacement']}</td>
-            <td>{row['engine_info']}</td>
-            <td>{row['location']}</td>
-        </tr>
+        <div class="row">
+            <div class="cell"><a href="{row['url']}">{row['url']}</a></div>
+            <div class="cell">{row['title']}</div>
+            <div class="cell">{row['price']}</div>
+            <div class="cell">{row['mileage']}</div>
+            <div class="cell">{row['year']}</div>
+            <div class="cell">{row['month']}</div>
+            <div class="cell">{row['gear_and_displacement']}</div>
+            <div class="cell">{row['engine_info']}</div>
+            <div class="cell">{row['location']}</div>
+        </div>
     '''
 
 # Закрытие HTML-тегов
 html_content += '''
-    </table>
+    </div>
 </body>
 </html>
 '''
