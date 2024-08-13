@@ -1,83 +1,79 @@
 import pandas as pd
 
 # Чтение данных из CSV файла
-data = pd.read_csv('tesla.csv')
+data = pd.read_csv('cars_data1.csv')
 
-# Генерация HTML-кода
+# Начало HTML-кода
 html_content = '''
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Car Listings</title>
-<style>
-    .container {
-        width: 80%;
-        margin: 20px auto;
-    }
-    .row {
-        display: flex;
-        border-bottom: 1px solid black;
-    }
-    .header, .cell {
-        padding: 8px;
-        text-align: left;
-        flex: 1; /* равномерное распределение ширины */
-    }
-    .header {
-        background-color: #f2f2f2;
-        font-weight: bold;
-    }
-    a {
-        color: blue;
-        text-decoration: none;
-    }
-</style>
+    <title>Информация об автомобилях</title>
+    <style>
+        .car-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin: 20px;
+        }
+        .car-card {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 10px;
+            width: 300px;
+            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        .car-card img {
+            width: 100%;
+            border-radius: 5px;
+        }
+        .car-title {
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        .car-info {
+            margin-top: 5px;
+        }
+    </style>
 </head>
 <body>
-    <h1>Car Listings</h1>
-    <div class="container">
-        <div class="row header">
-            <div class="cell">URL</div>
-            <div class="cell">Title</div>
-            <div class="cell">Price</div>
-            <div class="cell">Mileage</div>
-            <div class="cell">Year</div>
-            <div class="cell">Month</div>
-            <div class="cell">Gear and Displacement</div>
-            <div class="cell">Engine Info</div>
-            <div class="cell">Location</div>
-        </div>
-    </div>
-</body>
+
+<h1>Информация об автомобилях</h1>
+
+<div class="car-container">
 '''
 
-# Добавление строк таблицы из данных CSV
+# Генерация карточек для каждого автомобиля
 for index, row in data.iterrows():
     html_content += f'''
-        <div class="row">
-            <div class="cell"><a href="{row['url']}">{row['url']}</a></div>
-            <div class="cell">{row['title']}</div>
-            <div class="cell">{row['price']}</div>
-            <div class="cell">{row['mileage']}</div>
-            <div class="cell">{row['year']}</div>
-            <div class="cell">{row['month']}</div>
-            <div class="cell">{row['gear_and_displacement']}</div>
-            <div class="cell">{row['engine_info']}</div>
-            <div class="cell">{row['location']}</div>
-        </div>
+    <div class="car-card">
+        <a href="{row['url']}">
+            <img src="{row['image_url']}" alt="{row['title']}">
+            <div class="car-title">{row['title']}</div>
+        </a>
+            <div class="car-info">Цена: {row['price']}</div>
+            <div class="car-info">Пробег: {row['mileage']}</div>
+            <div class="car-info">Год: {row['year']}</div>
+            <div class="car-info">Месяц: {row['month']}</div>
+            <div class="car-info">КПП и объем: {row['gear_and_displacement']}</div>
+            <div class="car-info">Двигатель: {row['engine_info']}</div>
+            <div class="car-info">Местоположение: {row['location']}</div>
+        
+    </div>
     '''
 
-# Закрытие HTML-тегов
+# Завершение HTML-кода
 html_content += '''
-    </div>
+</div>
+
 </body>
 </html>
 '''
 
-# Запись HTML в файл
-with open('output.html', 'w', encoding='utf-8') as file:
-    file.write(html_content)
+# Запись в HTML-файл
+with open('cars.html', 'w', encoding='utf-8') as f:
+    f.write(html_content)
 
 print("HTML файл успешно создан!")

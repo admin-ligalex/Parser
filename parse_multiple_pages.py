@@ -9,7 +9,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from concurrent.futures import ThreadPoolExecutor
 
 
-def selenium_details(car_url, replacement_dict, max_attempts=3):
+def selenium_details(car_url, image_url, replacement_dict, max_attempts=3):
     #  extension_path = 'C:/Users/iuser/Documents/BrowsecVPN/'  # или путь к
     # распакованной папке
     options = Options()
@@ -77,6 +77,7 @@ def selenium_details(car_url, replacement_dict, max_attempts=3):
 
                 return {
                     'url': car_url,
+                    'image_url': image_url,
                     'title': title,
                     'price': price,
                     'mileage': mileage,
@@ -98,11 +99,11 @@ def selenium_details(car_url, replacement_dict, max_attempts=3):
     return None
 
 
-def parse_multiple_pages(car_urls, replacement_dict):
+def parse_multiple_pages(car_details, replacement_dict):
     results = []
 
     with ThreadPoolExecutor(max_workers=1) as executor:
-        futures = {executor.submit(selenium_details, url, replacement_dict): url for url in car_urls}
+        futures = {executor.submit(selenium_details, url, car_details[url], replacement_dict): url for url in car_details.keys()}
 
         for future in futures:
             try:

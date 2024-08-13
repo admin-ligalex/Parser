@@ -12,8 +12,8 @@ from get_html import get_html
 logging.basicConfig(level=logging.INFO)
 
 # Базовый URL страницы для парсинга
-BASE_URL = 'https://www.che168.com/china/tesila/modely/a3_5'
-csv_file = 'tesla.csv'
+BASE_URL = 'https://www.che168.com/china/wushiling/dmax/a3_5'
+csv_file = 'cars_data1.csv'
 
 
 
@@ -27,8 +27,7 @@ def get_content(html):
     soup = BeautifulSoup(html, 'html.parser')
     items = soup.find_all('a', class_='carinfo')  # Находим все ссылки на автомобили
 
-    cars = []
-    images = []  # Список для хранения ссылок на изображения
+    cars_images = {}  # Словарь для хранения пар "ссылка на автомобиль - изображение"
 
     for item in items:
         link = item.get('href')
@@ -37,18 +36,19 @@ def get_content(html):
 
             # Проверяем, что ссылка соответствует нужному формату
             if '/TopicApp/' not in absolute_link and 'che168.com/dealer/' in absolute_link:
-                cars.append(absolute_link)  # Добавляем ссылку в список
-
                 # Находим изображение внутри элемента
                 img_tag = item.find('img', src=True)  # Находим тег img с атрибутом src
-                if img_tag:
-                    img_src = img_tag['src']
-                    # Добавляем протокол, если нужно
-                    if img_src.startswith('//'):
-                        img_src = 'https:' + img_src
-                    images.append(img_src)  # Добавляем ссылку на изображение в список
+                img_src = img_tag['src'] if img_tag else None  # Получаем ссылку на изображение
 
-    return cars, images  # Возвращаем оба списка
+                # Добавляем протокол, если нужно
+                if img_src and img_src.startswith('//'):
+                    img_src = 'https:' + img_src
+
+                # Добавляем в словарь только если изображение найдено
+                if img_src:
+                    cars_images[absolute_link] = img_src  # Связываем ссылку на автомобиль с изображением
+
+    return cars_images  # Возвращаем словарь
 
 
 # Функция для чтения существующих URL из CSV файла
@@ -86,33 +86,33 @@ def write_to_csv(details, filename):
 # Основная функция парсинга
 def parse():
     page_number = 1  # Начинаем с первой страницы
-    all_car_links = []  # Список для хранения всех ссылок на автомобили
+    all_car_links = {}  # Словарь для хранения всех ссылок на автомобили и их изображений
 
     # Сначала собираем все ссылки на автомобили
     while True:
         # Формируем URL для страницы
         page_url = (f'{BASE_URL}'
-                    f'msdgscncgpi1ltocsp{page_number}exr3/') #exr3 exx0
+                    f'msdgscncgpi1ltocsp{page_number}exr3/')  # exr3 exx0
         logging.info(f'Парсинг страницы {page_url}...')
         time.sleep(5)
         html = get_html(page_url)
 
-
         existing_urls = read_existing_urls(csv_file)
 
         if html.status_code == 200:
-            cars = get_content(html.text)  # Получаем список ссылок
+            cars_images = get_content(html.text)  # Получаем словарь ссылок и изображений
 
-            if not cars:  # Если нет автомобилей на странице, выходим из цикла
+            if not cars_images:  # Если нет автомобилей на странице, выходим из цикла
                 break
-            # Фильтруем автомобили, оставляя только те, которые нет в existing_urls
-            filtered_cars = [car for car in cars if car not in existing_urls]
 
-            # Теперь добавляем отфильтрованные ссылки в общий список
-            all_car_links.extend(filtered_cars)
+            # Фильтруем автомобили, оставляя только те, которые нет в existing_urls
+            filtered_cars = {link: img for link, img in cars_images.items() if link not in existing_urls}
+
+            # Теперь добавляем отфильтрованные ссылки в общий словарь
+            all_car_links.update(filtered_cars)
 
             # Обновляем множество существующих URL
-            existing_urls.update(filtered_cars)
+            existing_urls.update(filtered_cars.keys())
 
             page_number += 1  # Переход к следующей странице
         else:
@@ -127,7 +127,6 @@ def parse():
     details = parse_multiple_pages(all_car_links, replacement_dict)  # Получаем детали каждого автомобиля
 
     # Запись данных в CSV файл
-
     if details:  # Проверяем, что список не пустой
         write_to_csv(details, csv_file)
         print(f'Data has been written to {csv_file}')
