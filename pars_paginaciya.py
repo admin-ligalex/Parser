@@ -13,7 +13,7 @@ logging.basicConfig(level=logging.INFO)
 
 # Базовый URL страницы для парсинга
 BASE_URL = 'https://www.che168.com/china/wushiling/dmax/a3_5'
-csv_file = 'cars_data1.csv'
+csv_file = 'CSV/cars_data1.csv'
 
 
 

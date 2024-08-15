@@ -1,7 +1,7 @@
 import pandas as pd
 
 # Чтение данных из CSV файла
-data = pd.read_csv('cars_data1.csv')
+data = pd.read_csv('CSV/cars_data1.csv')
 
 # Начало HTML-кода
 html_content = '''
@@ -73,7 +73,7 @@ html_content += '''
 '''
 
 # Запись в HTML-файл
-with open('cars.html', 'w', encoding='utf-8') as f:
+with open('html/cars.html', 'w', encoding='utf-8') as f:
     f.write(html_content)
 
 print("HTML файл успешно создан!")
